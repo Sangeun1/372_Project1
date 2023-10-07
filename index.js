@@ -3,32 +3,38 @@
 let list = []
 let curr = 0;
 
-const addButton = document.getElementById('addTask');
-addButton.addEventListner('click',addToDo);
+const addButton = document.getElementById("addTask");
+addButton.addEventListener('click',(e)=>{
+	addToDo();
+},false);
 
-const todoList = document.querySelector('taskList');
+const todoList = document.getElementById("taskList");
 
 
 //Add a single ToDo
 function addToDo(){
 	//get data from html 
-	const inputName = document.getElementById("taskName").value();
-	const inputPriority = document.getElementById("priority").value();
-	const inputCategory = document.getElementById("category").value();
+	const inputName = document.getElementById("taskName").value;
+	const inputPriority = document.getElementById("priority").value;
+	const inputCategory = document.getElementById("category").value;
 	
-	if(inputName != ""){ // if inputName is not empty, make a new todo object
+	if(inputName!= ""){ // if inputName is not empty, make a new todo object
 		const toDo ={
-			id: curr,
+			id: Date.now(),
 			name: inputName,
 			priority: inputPriority,
 			category: inputCategory,
-			date: Date.now()
-		}
+			status: false
+		};
+		
+		curr++;
+		
+		list.unshift(toDo);// add todo to the front of the list,
+		save();// save the recently updated list to the local storage,
+		refresh();// and display it 
 	}
 	
-	list.unshift(toDo);// add todo to the front of the list,
-	save();// save the recently updated list to the local storage,
-	refresh();// and display it 
+
 	
 }
 
@@ -44,7 +50,7 @@ function refresh(){
 	
 	list.forEach(toDo=>{
         const li = document.createElement('li');
-       	li.innerHTML = "${todo.taskName}";
+       	li.innerHTML = toDo.name;
         todoList.append(li);
         })
  }
