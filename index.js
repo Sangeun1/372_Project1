@@ -2,6 +2,8 @@
 
 let list = []
 
+load();
+
 const addButton = document.getElementById("addTask");
 addButton.addEventListener('click',(e)=>{
 	addToDo();
@@ -51,7 +53,6 @@ function addToDo(){
 			status = 'uncompleted';
 		}
 	
-		console.log(status);
 		const toDo ={
 			id: Date.now(),
 			name: inputName,
@@ -256,10 +257,28 @@ function checkOverdueTasks() {
 
 
 //save to local storage (You can delete anytime if there is no time to implement)
-function save(){
-	
+function save() {
+	try {
+	  const jsonData = JSON.stringify(list);
+	  localStorage.setItem('todoListData', jsonData);
+	  console.log('Data saved successfully.');
+	} catch (error) {
+	  console.error('Error saving data:', error);
+	}
 }
 
+function load() {
+	try {
+	  const jsonData = localStorage.getItem('todoListData');
+	  if (jsonData) {
+		list = JSON.parse(jsonData);
+		refresh();
+		console.log('Data loaded successfully.');
+	  }
+	} catch (error) {
+	  console.error('Error loading data:', error);
+	}
+}
 
 function filterCategory() {
 	const selectedCategory = categoryFilter.value;
