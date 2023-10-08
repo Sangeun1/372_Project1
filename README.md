@@ -17,7 +17,6 @@ The ToDo List is a web-based task management application that allows you to keep
 - **Categories:** Organize tasks into categories such as Work, School, and Personal.
 - **Overdue Alerts:** Receive alerts for overdue tasks and highlight them in red.
 - **Filtering:** Filter tasks by status, priority, and category to focus on what matters most.
-- **Responsive Design:** The application is responsive and can be used on various devices.
 
 
 ## Getting Started
