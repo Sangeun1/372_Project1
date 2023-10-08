@@ -554,3 +554,95 @@ priorityFilter.addEventListener("change", () => {
 });
 
 
+/***************************************************************/
+/***********************Manual testing**************************/
+/***************************************************************/
+/**
+ * Call each function in your broswer's console
+ * 		testMarkTaskAsCompleted();
+ * 		testMarkTaskAsOverdue();
+ */
+
+
+
+function markTaskAsCompleted(task) {
+    task.status = 'completed';
+}
+  
+function testMarkTaskAsCompleted() {
+    const task = {
+      id: 1,
+      name: 'Sample Task',
+      status: 'uncompleted', 
+      priority: 'medium',
+      category: 'work',
+      dueDate: '2023-12-31', 
+    };
+    // Assert that the task starts as 'uncompleted'
+    console.assert(task.status === 'uncompleted', 'Task should start as uncompleted');
+  
+    // Mark the task as completed
+    markTaskAsCompleted(task);
+  
+    // Assert that the task is now 'completed'
+    console.assert(task.status === 'completed', 'Task should be marked as completed');
+}
+
+function markTaskAsOverdue(task) {
+	const dueDate = new Date(task.dueDate);
+	const today = new Date();
+  
+	if (dueDate < today) {
+	  task.status = 'overdue';
+	}
+  }
+  
+  function testMarkTaskAsOverdue() {
+	const overdueTask = {
+	  id: 1,
+	  name: 'Overdue Task',
+	  status: 'uncompleted',
+	  priority: 'medium',
+	  category: 'work',
+	  dueDate: '2023-10-01', // Past due date
+	};
+  
+	const futureTask = {
+	  id: 2,
+	  name: 'Future Task',
+	  status: 'uncompleted',
+	  priority: 'low',
+	  category: 'personal',
+	  dueDate: '2023-12-31', // Future due date
+	};
+  
+	console.assert(
+	  overdueTask.status === 'uncompleted',
+	  'Overdue task should start as uncompleted'
+	);
+  
+	console.assert(
+	  futureTask.status === 'uncompleted',
+	  'Future task should start as uncompleted'
+	);
+  
+	markTaskAsOverdue(overdueTask);
+  	markTaskAsOverdue(futureTask);
+  
+	console.assert(
+	  overdueTask.status === 'overdue',
+	  'Overdue task should be marked as overdue'
+	);
+  
+	// Assert that the future task is still 'uncompleted' (not overdue)
+	console.assert(
+	  futureTask.status === 'uncompleted',
+	  'Future task should remain uncompleted (not overdue)'
+	);
+  }
+  
+
+  
+  
+
+  
