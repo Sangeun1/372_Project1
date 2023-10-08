@@ -8,6 +8,7 @@ addButton.addEventListener('click',(e)=>{
 },false);
 
 
+
 //Add a single ToDo
 function addToDo(){
 	//get data from html 
@@ -39,7 +40,7 @@ function addToDo(){
 			alert("Due date cannot be in the past. Please select a valid due date.");
 			return; 
 		}
-
+	
 		const toDo ={
 			id: Date.now(),
 			name: inputName,
@@ -91,6 +92,7 @@ function editTask(toDo) {
 
 		save();
 		refresh();
+		checkOverdueTasks(); // Check for overdue tasks
 
 		// Make it invisiable
 		editContainer.style.display = "none";
@@ -127,21 +129,7 @@ function refresh(){
 		const checkbox = document.createElement("input");
 		checkbox.type = "checkbox";
 		checkbox.checked = toDo.status;
-		checkbox.addEventListener("change", () => {
-			toDo.status = checkbox.checked;
-			save();
-			if (checkbox.checked) {
-				nameSpan.classList.add("completed");
-				dueDateSpan.classList.add("completed");
-				prioritySpan.classList.add("completed");
-				categorySpan.classList.add("completed");
-			} else {
-				nameSpan.classList.remove("completed");
-				dueDateSpan.classList.remove("completed");
-				prioritySpan.classList.remove("completed");
-				categorySpan.classList.remove("completed");
-			}
-    	});
+		
 		li.appendChild(checkbox);
 
 		// Cross out completed task
@@ -166,12 +154,28 @@ function refresh(){
     	li.appendChild(prioritySpan);
     	li.appendChild(categorySpan);
     	
+		checkbox.addEventListener("change", () => {
+			toDo.status = checkbox.checked;
+			save();
+			if (checkbox.checked) {
+				nameSpan.classList.add("completed");
+				dueDateSpan.classList.add("completed");
+				prioritySpan.classList.add("completed");
+				categorySpan.classList.add("completed");
+			} else {
+				nameSpan.classList.remove("completed");
+				dueDateSpan.classList.remove("completed");
+				prioritySpan.classList.remove("completed");
+				categorySpan.classList.remove("completed");
+			}
+			console.log(checkbox.checked)
+    	});
 
-
-       	if(isDue(toDo)){// if todo is due today, change the color to red. 
-       		li.style = "color:red";
-       		//console.log("Changed the color");
-		}
+		if(isDue(toDo)){// if todo is due today, change the color to red. 
+			li.style = "color:red";
+			//console.log("Changed the color");
+		 }
+       	
 
 		// Create edit button for each task
 		const editButton = document.createElement("button");
@@ -222,18 +226,302 @@ function formatToday(){ // copied from stack overflow. might be changed if there
     return [year, month, day].join('-');
 }
 
+function checkOverdueTasks() {
+    const today = new Date();
+
+    list.forEach((toDo) => {
+        const dueDate = new Date(toDo.dueDate);
+
+        if (dueDate < today && !toDo.status) {
+            alert(`Task "${toDo.name}" is overdue!`);
+        }
+    });
+}
+
 //mark down
 
-//filter 
-
-// filter by category
-
-// filter by status
-
-// alaraming overdue tasks 
 
 //save to local storage (You can delete anytime if there is no time to implement)
 function save(){
 	
 }
+
+
+function filterCategory() {
+	const selectedCategory = categoryFilter.value;
+	const filteredList = list.filter((task) => task.category === selectedCategory || selectedCategory === "all");
+
+	const todoList = document.getElementById("taskList");
+	todoList.innerHTML = ""; 
+	
+	filteredList.forEach(toDo=>{ 
+ 
+ 		let li = document.createElement('li');
+
+		const checkbox = document.createElement("input");
+		checkbox.type = "checkbox";
+		checkbox.checked = toDo.status;
+		checkbox.addEventListener("change", () => {
+			toDo.status = checkbox.checked;
+			save();
+			if (checkbox.checked) {
+				nameSpan.classList.add("completed");
+				dueDateSpan.classList.add("completed");
+				prioritySpan.classList.add("completed");
+				categorySpan.classList.add("completed");
+			} else {
+				nameSpan.classList.remove("completed");
+				dueDateSpan.classList.remove("completed");
+				prioritySpan.classList.remove("completed");
+				categorySpan.classList.remove("completed");
+			}
+    	});
+		li.appendChild(checkbox);
+
+		const nameSpan = document.createElement("span");
+		nameSpan.innerText = toDo.name;
+
+		const dueDateSpan = document.createElement("span");
+		dueDateSpan.innerText = `Due Date: ${toDo.dueDate}`;
+
+		const prioritySpan = document.createElement("span");
+		prioritySpan.innerText = `Priority: ${toDo.priority}`;
+
+		const categorySpan = document.createElement("span");
+		categorySpan.innerText = `Category: ${toDo.category}`;
+		
+		if (checkbox.checked) {
+			nameSpan.classList.add("completed");
+			dueDateSpan.classList.add("completed");
+			prioritySpan.classList.add("completed");
+			categorySpan.classList.add("completed");
+		}
+
+		li.appendChild(nameSpan);
+		li.appendChild(dueDateSpan);
+    	li.appendChild(prioritySpan);
+    	li.appendChild(categorySpan);
+    	
+
+
+       	if(isDue(toDo)){
+       		li.style = "color:red";
+		}
+
+		const editButton = document.createElement("button");
+		editButton.innerText = "Edit";
+		editButton.addEventListener("click", () => {
+			editTask(toDo);
+		});
+		li.appendChild(editButton);
+
+
+		const deleteButton = document.createElement("button");
+		deleteButton.innerText = "Delete";
+		deleteButton.addEventListener("click", () => {
+			deleteToDo(toDo);
+		});
+		li.appendChild(deleteButton);
+
+        todoList.append(li);
+    })
+}
+
+
+function filterStatus() {
+	console.log("status")
+	const selectedStatus = statusFilter.value;
+    const filteredList = list.filter((task) => {
+        if (selectedStatus === "all") {
+            return true; // Show all tasks
+        } else if (selectedStatus === "completed") {
+            return task.status === true; // Show completed tasks
+        } else if (selectedStatus === "uncompleted") {
+            return task.status === false; // Show uncompleted tasks
+        } else if (selectedStatus === "overdue") {
+            return isDue(task); // Show overdue tasks
+        }
+    });
+
+	const todoList = document.getElementById("taskList");
+	todoList.innerHTML = ""; 
+	
+	filteredList.forEach(toDo=>{ 
+ 
+ 		let li = document.createElement('li');
+
+		const checkbox = document.createElement("input");
+		checkbox.type = "checkbox";
+		checkbox.checked = toDo.status;
+		checkbox.addEventListener("change", () => {
+			toDo.status = checkbox.checked;
+			save();
+			if (checkbox.checked) {
+				nameSpan.classList.add("completed");
+				dueDateSpan.classList.add("completed");
+				prioritySpan.classList.add("completed");
+				categorySpan.classList.add("completed");
+			} else {
+				nameSpan.classList.remove("completed");
+				dueDateSpan.classList.remove("completed");
+				prioritySpan.classList.remove("completed");
+				categorySpan.classList.remove("completed");
+			}
+    	});
+		li.appendChild(checkbox);
+
+		const nameSpan = document.createElement("span");
+		nameSpan.innerText = toDo.name;
+
+		const dueDateSpan = document.createElement("span");
+		dueDateSpan.innerText = `Due Date: ${toDo.dueDate}`;
+
+		const prioritySpan = document.createElement("span");
+		prioritySpan.innerText = `Priority: ${toDo.priority}`;
+
+		const categorySpan = document.createElement("span");
+		categorySpan.innerText = `Category: ${toDo.category}`;
+
+
+		if (checkbox.checked) {
+			nameSpan.classList.add("completed");
+			dueDateSpan.classList.add("completed");
+			prioritySpan.classList.add("completed");
+			categorySpan.classList.add("completed");
+		}
+
+		
+		li.appendChild(nameSpan);
+		li.appendChild(dueDateSpan);
+    	li.appendChild(prioritySpan);
+    	li.appendChild(categorySpan);
+    	
+
+
+       	if(isDue(toDo)){
+       		li.style = "color:red";
+		}
+
+		const editButton = document.createElement("button");
+		editButton.innerText = "Edit";
+		editButton.addEventListener("click", () => {
+			editTask(toDo);
+		});
+		li.appendChild(editButton);
+
+
+		const deleteButton = document.createElement("button");
+		deleteButton.innerText = "Delete";
+		deleteButton.addEventListener("click", () => {
+			deleteToDo(toDo);
+		});
+		li.appendChild(deleteButton);
+
+        todoList.append(li);
+    })
+}
+
+function filterPriority() {
+	const selectedPriority = priorityFilter.value;
+    const filteredList = list.filter((task) => {
+        if (selectedPriority === "all") {
+            return true; // Show all tasks
+        } else {
+            return task.priority === selectedPriority;
+        }
+    });
+	const todoList = document.getElementById("taskList");
+	todoList.innerHTML = ""; 
+	
+	filteredList.forEach(toDo=>{ 
+ 
+ 		let li = document.createElement('li');
+
+		const checkbox = document.createElement("input");
+		checkbox.type = "checkbox";
+		checkbox.checked = toDo.status;
+		checkbox.addEventListener("change", () => {
+			toDo.status = checkbox.checked;
+			save();
+			if (checkbox.checked) {
+				nameSpan.classList.add("completed");
+				dueDateSpan.classList.add("completed");
+				prioritySpan.classList.add("completed");
+				categorySpan.classList.add("completed");
+			} else {
+				nameSpan.classList.remove("completed");
+				dueDateSpan.classList.remove("completed");
+				prioritySpan.classList.remove("completed");
+				categorySpan.classList.remove("completed");
+			}
+    	});
+		li.appendChild(checkbox);
+
+		const nameSpan = document.createElement("span");
+		nameSpan.innerText = toDo.name;
+
+		const dueDateSpan = document.createElement("span");
+		dueDateSpan.innerText = `Due Date: ${toDo.dueDate}`;
+
+		const prioritySpan = document.createElement("span");
+		prioritySpan.innerText = `Priority: ${toDo.priority}`;
+
+		const categorySpan = document.createElement("span");
+		categorySpan.innerText = `Category: ${toDo.category}`;
+
+
+		if (checkbox.checked) {
+			nameSpan.classList.add("completed");
+			dueDateSpan.classList.add("completed");
+			prioritySpan.classList.add("completed");
+			categorySpan.classList.add("completed");
+		}
+
+		
+		li.appendChild(nameSpan);
+		li.appendChild(dueDateSpan);
+    	li.appendChild(prioritySpan);
+    	li.appendChild(categorySpan);
+    	
+
+
+       	if(isDue(toDo)){
+       		li.style = "color:red";
+		}
+
+		const editButton = document.createElement("button");
+		editButton.innerText = "Edit";
+		editButton.addEventListener("click", () => {
+			editTask(toDo);
+		});
+		li.appendChild(editButton);
+
+
+		const deleteButton = document.createElement("button");
+		deleteButton.innerText = "Delete";
+		deleteButton.addEventListener("click", () => {
+			deleteToDo(toDo);
+		});
+		li.appendChild(deleteButton);
+
+        todoList.append(li);
+    })
+}
+
+const categoryFilter = document.getElementById("categoryFilter");
+categoryFilter.addEventListener("change", () => {
+    filterCategory();
+});
+
+
+const statusFilter = document.getElementById("statusFilter");
+statusFilter.addEventListener("change", () => {
+    filterStatus();
+});
+
+const priorityFilter = document.getElementById("priorityFilter");
+priorityFilter.addEventListener("change", () => {
+    filterPriority();
+});
+
 
