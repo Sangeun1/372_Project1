@@ -31,6 +31,8 @@ function addToDo(){
 	const todayMonth = today.getMonth();
 	const todayDay = today.getDate();
 
+	
+
 	if(inputName!= ""){ // if inputName is not empty, make a new todo object
 
 		// If invalid due date
@@ -38,15 +40,24 @@ function addToDo(){
 			(dueYear === todayYear && dueMonth < todayMonth) ||
 			(dueYear === todayYear && dueMonth === todayMonth && dueDay < todayDay)) {
 			alert("Due date cannot be in the past. Please select a valid due date.");
-			return; 
+
+			// return; 
+		}
+
+		let status;
+		if (dueDate < today) {
+			status = 'overdue';
+		} else {
+			status = 'uncompleted';
 		}
 	
+		console.log(status);
 		const toDo ={
 			id: Date.now(),
 			name: inputName,
 			priority: inputPriority,
 			category: inputCategory,
-			status: false,
+			status: status,
 			dueDate: inputDueDate
 		};
 		list.unshift(toDo);// add todo to the front of the list,
@@ -124,52 +135,54 @@ function refresh(){
 						// 오늘까지인 일정 빨간색 표시(대충 완료)
  
  		let li = document.createElement('li');
+		if (toDo.dueDate < formatToday() && toDo.status != 'completed' ) {
+			alert("Pending overdue task.")
+			li.style = "color:red";
+		}
 
 		// Create checkbox to mark 'complete'
 		const checkbox = document.createElement("input");
 		checkbox.type = "checkbox";
-		checkbox.checked = toDo.status;
 		
 		li.appendChild(checkbox);
 
-		// Cross out completed task
+
 		const nameSpan = document.createElement("span");
 		nameSpan.innerText = toDo.name;
-		if (checkbox.checked) {
-			nameSpan.classList.add("completed");
-		}
-
+		li.appendChild(nameSpan);
+		
 		// Display dueDate, priority, category for each task
 		const dueDateSpan = document.createElement("span");
 		dueDateSpan.innerText = `Due Date: ${toDo.dueDate}`;
+		li.appendChild(dueDateSpan);
 
 		const prioritySpan = document.createElement("span");
 		prioritySpan.innerText = `Priority: ${toDo.priority}`;
+		li.appendChild(prioritySpan);
 
 		const categorySpan = document.createElement("span");
 		categorySpan.innerText = `Category: ${toDo.category}`;
-
-		li.appendChild(nameSpan);
-		li.appendChild(dueDateSpan);
-    	li.appendChild(prioritySpan);
-    	li.appendChild(categorySpan);
+		li.appendChild(categorySpan);
+    	
     	
 		checkbox.addEventListener("change", () => {
-			toDo.status = checkbox.checked;
+			toDo.status = checkbox.checked ? 'completed' : 'uncompleted';
 			save();
-			if (checkbox.checked) {
-				nameSpan.classList.add("completed");
-				dueDateSpan.classList.add("completed");
-				prioritySpan.classList.add("completed");
-				categorySpan.classList.add("completed");
+			console.log("HERE", toDo.status);
+			if (toDo.status === 'completed') {
+				li.classList.add("completed");
 			} else {
-				nameSpan.classList.remove("completed");
-				dueDateSpan.classList.remove("completed");
-				prioritySpan.classList.remove("completed");
-				categorySpan.classList.remove("completed");
+				li.classList.remove("completed");
+				toDo.status = 'uncompleted';
 			}
-			console.log(checkbox.checked)
     	});
+
+		if (toDo.status === 'completed') {
+			li.classList.add("completed");
+		} else {
+			li.classList.remove("completed");
+		}
+		
 
 		if(isDue(toDo)){// if todo is due today, change the color to red. 
 			li.style = "color:red";
@@ -233,6 +246,7 @@ function checkOverdueTasks() {
         const dueDate = new Date(toDo.dueDate);
 
         if (dueDate < today && !toDo.status) {
+			toDo.status = "overdue";
             alert(`Task "${toDo.name}" is overdue!`);
         }
     });
@@ -252,62 +266,68 @@ function filterCategory() {
 	const filteredList = list.filter((task) => task.category === selectedCategory || selectedCategory === "all");
 
 	const todoList = document.getElementById("taskList");
-	todoList.innerHTML = ""; 
+	todoList.innerHTML = ""; // clean the list first, 
 	
-	filteredList.forEach(toDo=>{ 
+	filteredList.forEach(toDo=>{ //현재는 정말 기본적인 동작 밖에 안함- 추가해야할 것: 체크, 수정(시간없으면 뺄지도),
+						// 오늘까지인 일정 빨간색 표시(대충 완료)
  
  		let li = document.createElement('li');
+		if (toDo.dueDate < formatToday() && toDo.status != 'completed' ) {
+			alert("Pending overdue task.")
+			li.style = "color:red";
+		}
 
+		// Create checkbox to mark 'complete'
 		const checkbox = document.createElement("input");
 		checkbox.type = "checkbox";
-		checkbox.checked = toDo.status;
-		checkbox.addEventListener("change", () => {
-			toDo.status = checkbox.checked;
-			save();
-			if (checkbox.checked) {
-				nameSpan.classList.add("completed");
-				dueDateSpan.classList.add("completed");
-				prioritySpan.classList.add("completed");
-				categorySpan.classList.add("completed");
-			} else {
-				nameSpan.classList.remove("completed");
-				dueDateSpan.classList.remove("completed");
-				prioritySpan.classList.remove("completed");
-				categorySpan.classList.remove("completed");
-			}
-    	});
+		
 		li.appendChild(checkbox);
+
 
 		const nameSpan = document.createElement("span");
 		nameSpan.innerText = toDo.name;
-
+		li.appendChild(nameSpan);
+		
+		// Display dueDate, priority, category for each task
 		const dueDateSpan = document.createElement("span");
 		dueDateSpan.innerText = `Due Date: ${toDo.dueDate}`;
+		li.appendChild(dueDateSpan);
 
 		const prioritySpan = document.createElement("span");
 		prioritySpan.innerText = `Priority: ${toDo.priority}`;
+		li.appendChild(prioritySpan);
 
 		const categorySpan = document.createElement("span");
 		categorySpan.innerText = `Category: ${toDo.category}`;
-		
-		if (checkbox.checked) {
-			nameSpan.classList.add("completed");
-			dueDateSpan.classList.add("completed");
-			prioritySpan.classList.add("completed");
-			categorySpan.classList.add("completed");
-		}
-
-		li.appendChild(nameSpan);
-		li.appendChild(dueDateSpan);
-    	li.appendChild(prioritySpan);
-    	li.appendChild(categorySpan);
+		li.appendChild(categorySpan);
     	
+    	
+		checkbox.addEventListener("change", () => {
+			toDo.status = checkbox.checked ? 'completed' : 'uncompleted';
+			save();
+			console.log("HERE", toDo.status);
+			if (toDo.status === 'completed') {
+				li.classList.add("completed");
+			} else {
+				li.classList.remove("completed");
+				toDo.status = 'uncompleted';
+			}
+    	});
 
-
-       	if(isDue(toDo)){
-       		li.style = "color:red";
+		if (toDo.status === 'completed') {
+			li.classList.add("completed");
+		} else {
+			li.classList.remove("completed");
 		}
+		
 
+		if(isDue(toDo)){// if todo is due today, change the color to red. 
+			li.style = "color:red";
+			//console.log("Changed the color");
+		 }
+       	
+
+		// Create edit button for each task
 		const editButton = document.createElement("button");
 		editButton.innerText = "Edit";
 		editButton.addEventListener("click", () => {
@@ -323,85 +343,88 @@ function filterCategory() {
 		});
 		li.appendChild(deleteButton);
 
+		// li.innerHTML = toDo.name;
         todoList.append(li);
-    })
+        })
 }
 
 
 function filterStatus() {
-	console.log("status")
 	const selectedStatus = statusFilter.value;
     const filteredList = list.filter((task) => {
         if (selectedStatus === "all") {
             return true; // Show all tasks
         } else if (selectedStatus === "completed") {
-            return task.status === true; // Show completed tasks
+            return task.status === 'completed'; // Show completed tasks
         } else if (selectedStatus === "uncompleted") {
-            return task.status === false; // Show uncompleted tasks
+            return task.status === 'uncompleted'; // Show uncompleted tasks
         } else if (selectedStatus === "overdue") {
-            return isDue(task); // Show overdue tasks
+            return task.status === 'overdue'; // Show overdue tasks
         }
     });
 
 	const todoList = document.getElementById("taskList");
 	todoList.innerHTML = ""; 
 	
-	filteredList.forEach(toDo=>{ 
- 
- 		let li = document.createElement('li');
+	filteredList.forEach(toDo=>{ //현재는 정말 기본적인 동작 밖에 안함- 추가해야할 것: 체크, 수정(시간없으면 뺄지도),
+		// 오늘까지인 일정 빨간색 표시(대충 완료)
 
+		let li = document.createElement('li');
+		if (toDo.dueDate < formatToday() && toDo.status != 'completed' ) {
+			alert("Pending overdue task.")
+			li.style = "color:red";
+		}
+
+		// Create checkbox to mark 'complete'
 		const checkbox = document.createElement("input");
 		checkbox.type = "checkbox";
-		checkbox.checked = toDo.status;
-		checkbox.addEventListener("change", () => {
-			toDo.status = checkbox.checked;
-			save();
-			if (checkbox.checked) {
-				nameSpan.classList.add("completed");
-				dueDateSpan.classList.add("completed");
-				prioritySpan.classList.add("completed");
-				categorySpan.classList.add("completed");
-			} else {
-				nameSpan.classList.remove("completed");
-				dueDateSpan.classList.remove("completed");
-				prioritySpan.classList.remove("completed");
-				categorySpan.classList.remove("completed");
-			}
-    	});
+
 		li.appendChild(checkbox);
+
 
 		const nameSpan = document.createElement("span");
 		nameSpan.innerText = toDo.name;
+		li.appendChild(nameSpan);
 
+		// Display dueDate, priority, category for each task
 		const dueDateSpan = document.createElement("span");
 		dueDateSpan.innerText = `Due Date: ${toDo.dueDate}`;
+		li.appendChild(dueDateSpan);
 
 		const prioritySpan = document.createElement("span");
 		prioritySpan.innerText = `Priority: ${toDo.priority}`;
+		li.appendChild(prioritySpan);
 
 		const categorySpan = document.createElement("span");
 		categorySpan.innerText = `Category: ${toDo.category}`;
+		li.appendChild(categorySpan);
 
 
-		if (checkbox.checked) {
-			nameSpan.classList.add("completed");
-			dueDateSpan.classList.add("completed");
-			prioritySpan.classList.add("completed");
-			categorySpan.classList.add("completed");
+		checkbox.addEventListener("change", () => {
+			toDo.status = checkbox.checked ? 'completed' : 'uncompleted';
+			save();
+			if (toDo.status === 'completed') {
+				li.classList.add("completed");
+			} else {
+				li.classList.remove("completed");
+				toDo.status = 'uncompleted';
+			}
+		});
+
+		if (toDo.status === 'completed') {
+			li.classList.add("completed");
+		} else {
+			li.classList.remove("completed");
 		}
 
-		
-		li.appendChild(nameSpan);
-		li.appendChild(dueDateSpan);
-    	li.appendChild(prioritySpan);
-    	li.appendChild(categorySpan);
-    	
 
-
-       	if(isDue(toDo)){
-       		li.style = "color:red";
+		if(isDue(toDo)){// if todo is due today, change the color to red. 
+			li.style = "color:red";
+		//console.log("Changed the color");
 		}
 
+
+		// Create edit button for each task
 		const editButton = document.createElement("button");
 		editButton.innerText = "Edit";
 		editButton.addEventListener("click", () => {
@@ -417,8 +440,9 @@ function filterStatus() {
 		});
 		li.appendChild(deleteButton);
 
-        todoList.append(li);
-    })
+		// li.innerHTML = toDo.name;
+		todoList.append(li);
+		})
 }
 
 function filterPriority() {
@@ -433,62 +457,66 @@ function filterPriority() {
 	const todoList = document.getElementById("taskList");
 	todoList.innerHTML = ""; 
 	
-	filteredList.forEach(toDo=>{ 
- 
- 		let li = document.createElement('li');
+	filteredList.forEach(toDo=>{ //현재는 정말 기본적인 동작 밖에 안함- 추가해야할 것: 체크, 수정(시간없으면 뺄지도),
+		// 오늘까지인 일정 빨간색 표시(대충 완료)
 
+		let li = document.createElement('li');
+		if (toDo.dueDate < formatToday() && toDo.status != 'completed' ) {
+			alert("Pending overdue task.")
+			li.style = "color:red";
+		}
+
+		// Create checkbox to mark 'complete'
 		const checkbox = document.createElement("input");
 		checkbox.type = "checkbox";
-		checkbox.checked = toDo.status;
-		checkbox.addEventListener("change", () => {
-			toDo.status = checkbox.checked;
-			save();
-			if (checkbox.checked) {
-				nameSpan.classList.add("completed");
-				dueDateSpan.classList.add("completed");
-				prioritySpan.classList.add("completed");
-				categorySpan.classList.add("completed");
-			} else {
-				nameSpan.classList.remove("completed");
-				dueDateSpan.classList.remove("completed");
-				prioritySpan.classList.remove("completed");
-				categorySpan.classList.remove("completed");
-			}
-    	});
+
 		li.appendChild(checkbox);
+
 
 		const nameSpan = document.createElement("span");
 		nameSpan.innerText = toDo.name;
+		li.appendChild(nameSpan);
 
+		// Display dueDate, priority, category for each task
 		const dueDateSpan = document.createElement("span");
 		dueDateSpan.innerText = `Due Date: ${toDo.dueDate}`;
+		li.appendChild(dueDateSpan);
 
 		const prioritySpan = document.createElement("span");
 		prioritySpan.innerText = `Priority: ${toDo.priority}`;
+		li.appendChild(prioritySpan);
 
 		const categorySpan = document.createElement("span");
 		categorySpan.innerText = `Category: ${toDo.category}`;
+		li.appendChild(categorySpan);
 
 
-		if (checkbox.checked) {
-			nameSpan.classList.add("completed");
-			dueDateSpan.classList.add("completed");
-			prioritySpan.classList.add("completed");
-			categorySpan.classList.add("completed");
+		checkbox.addEventListener("change", () => {
+			toDo.status = checkbox.checked ? 'completed' : 'uncompleted';
+			save();
+			console.log("HERE", toDo.status);
+			if (toDo.status === 'completed') {
+				li.classList.add("completed");
+			} else {
+				li.classList.remove("completed");
+				toDo.status = 'uncompleted';
+			}
+		});
+
+		if (toDo.status === 'completed') {
+			li.classList.add("completed");
+		} else {
+			li.classList.remove("completed");
 		}
 
-		
-		li.appendChild(nameSpan);
-		li.appendChild(dueDateSpan);
-    	li.appendChild(prioritySpan);
-    	li.appendChild(categorySpan);
-    	
 
-
-       	if(isDue(toDo)){
-       		li.style = "color:red";
+		if(isDue(toDo)){// if todo is due today, change the color to red. 
+			li.style = "color:red";
+		//console.log("Changed the color");
 		}
 
+
+		// Create edit button for each task
 		const editButton = document.createElement("button");
 		editButton.innerText = "Edit";
 		editButton.addEventListener("click", () => {
@@ -504,8 +532,9 @@ function filterPriority() {
 		});
 		li.appendChild(deleteButton);
 
-        todoList.append(li);
-    })
+		// li.innerHTML = toDo.name;
+		todoList.append(li);
+		})
 }
 
 const categoryFilter = document.getElementById("categoryFilter");
