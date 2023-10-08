@@ -6,25 +6,59 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>372 Project1</title>
     <style>
+        /* STYLE REFERENCE: https://www.w3schools.com/howto/howto_js_todolist.asp */
         /* Add your CSS styles here */
         body {
-            display: flex;
-            justify-content: center;
             margin: 0;
-            background-color: #f0f0f0;
+            min-width: 250px;
         }
 
-        /* Container styles */
-        .container {
-            text-align: center;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            margin-top: 20px; /* Add margin at the top */
+        * {
+            box-sizing: border-box;
         }
-        
-        /* Add more styles for your To-Do list components */
+
+        .container {
+            background-color: #fff;
+            padding: 30px 40px;
+            text-align: center;
+        }
+
+        ul {
+            margin: 0;
+            padding: 0;
+        }
+
+        #taskList li {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Cross out completed tasks */
+        .completed {
+            text-decoration: line-through;
+            opacity: 0.5;
+        }
+
+        /* #taskList li.overdue {
+            background-color: #f2dede;
+            border-color: #ebccd1;
+            color: #a94442;
+        } */
+
+        .edit-container {
+            display: none; /*Invisible first*/
+        }
+
+        /* For edit css */
+        .form-group {
+            margin-bottom: 10px; 
+        }
+
     </style>
 </head>
 <body>
@@ -34,7 +68,7 @@
         <!-- Task Input Section -->
         <div class="input-container">
             <input type="text" id="taskName" placeholder="Task Name">
-            <input type="date" id="dueDate">
+            <input type="date" id="dueDate" placeholder="Due Date" value="YYYY-MM-DD">
             <select id="priority">
                 <option value="low">Low Priority</option>
                 <option value="medium">Medium Priority</option>
@@ -85,6 +119,40 @@
                 <!-- Tasks will be added here -->
             </ul>
         </div>
+
+
+        <!-- When user clicks Edit button -->
+        <div id="edit-container" class="edit-container">
+            <h2>Edit Task</h2>
+            <div class="form-group">
+                <label for="editName">Name</label>
+                <span id="editNameDisplay"></span>
+                <input type="text" class="form-control" id="editName" style="display: none;">
+            </div>
+            <div class="form-group">
+                <label for="editDueDate">Due Date</label>
+                <input type="date" class="form-control" id="editDueDate">
+            </div>
+            <div class="form-group">
+                <label for="editPriority">Priority</label>
+                <select class="form-control" id="editPriority">
+                <option value="low">Low Priority</option>
+                <option value="medium">Medium Priority</option>
+                <option value="high">High Priority</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="editCategory">Category</label>
+                <select class="form-control" id="editCategory">
+                <option value="work">Work</option>
+                <option value="school">School</option>
+                <option value="personal">Personal</option>
+                </select>
+            </div>
+            <button id="saveEdit" class="btn btn-primary">Save</button>
+            </div>
+        </div>
+
     </div>
 
     

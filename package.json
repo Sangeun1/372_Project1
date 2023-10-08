@@ -1,0 +1,29 @@
+{
+  "name": "372_Project1",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sangeun1/372_Project1.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Sangeun1/372_Project1/issues"
+  },
+  "homepage": "https://github.com/Sangeun1/372_Project1#readme",
+  "devDependencies": {
+    "jest-environment-jsdom": "^29.7.0",
+    "jsdom": "^16.7.0"
+  },  
+  "dependencies": {
+    "chai": "^4.3.10",
+    "mocha": "^10.2.0",
+    "selenium-webdriver": "^4.13.0"
+  }
+}
