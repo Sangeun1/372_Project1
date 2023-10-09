@@ -1,3 +1,5 @@
+// delete load() function in index.js, line 5 before testing
+
 const { Builder, By, Key, until } = require('selenium-webdriver');
 const assert = require('assert');
 

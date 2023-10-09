@@ -2,7 +2,7 @@
 
 let list = []
 
-load();
+load(); // comment out this line before unit testing.
 
 const addButton = document.getElementById("addTask");
 addButton.addEventListener('click',(e)=>{
@@ -42,8 +42,7 @@ function addToDo(){
 			(dueYear === todayYear && dueMonth < todayMonth) ||
 			(dueYear === todayYear && dueMonth === todayMonth && dueDay < todayDay)) {
 			alert("Due date cannot be in the past. Please select a valid due date.");
-
-			// return; 
+			return; 
 		}
 
 		let status;
@@ -103,8 +102,8 @@ function editTask(toDo) {
 		toDo.dueDate = editDueDateInput.value;
 
 		save();
-		refresh();
 		checkOverdueTasks(); // Check for overdue tasks
+		refresh();
 
 		// Make it invisiable
 		editContainer.style.display = "none";
@@ -124,7 +123,90 @@ function deleteToDo(toDo) {
 	  refresh();
 	}
   }
+//first display of the todo list
+function initialRefresh(){
+	const todoList = document.getElementById("taskList");
+	todoList.innerHTML = ""; // clean the list first, 
+	
+	list.forEach(toDo=>{ 
+ 		let li = document.createElement('li');
+		if (toDo.dueDate < formatToday() && toDo.status != 'completed' ) {
+			const name = toDo.name;
+			alert(name+ ": Pending overdue task.");
+			li.style = "color:red";
+		}
 
+		// Create checkbox to mark 'complete'
+		const checkbox = document.createElement("input");
+		checkbox.type = "checkbox";
+		
+		li.appendChild(checkbox);
+
+
+		const nameSpan = document.createElement("span");
+		nameSpan.innerText = toDo.name;
+		li.appendChild(nameSpan);
+		
+		// Display dueDate, priority, category for each task
+		const dueDateSpan = document.createElement("span");
+		dueDateSpan.innerText = `Due Date: ${toDo.dueDate}`;
+		li.appendChild(dueDateSpan);
+
+		const prioritySpan = document.createElement("span");
+		prioritySpan.innerText = `Priority: ${toDo.priority}`;
+		li.appendChild(prioritySpan);
+
+		const categorySpan = document.createElement("span");
+		categorySpan.innerText = `Category: ${toDo.category}`;
+		li.appendChild(categorySpan);
+    	
+    	
+		checkbox.addEventListener("change", () => {
+			toDo.status = checkbox.checked ? 'completed' : 'uncompleted';
+			save();
+			console.log("HERE", toDo.status);
+			if (toDo.status === 'completed') {
+				li.classList.add("completed");
+			} else {
+				li.classList.remove("completed");
+				toDo.status = 'uncompleted';
+			}
+    	});
+
+		if (toDo.status === 'completed') {
+			li.classList.add("completed");
+		} else {
+			li.classList.remove("completed");
+		}
+		
+
+		if(isDue(toDo)){// if todo is due today, change the color to red. 
+			li.style = "color:red";
+			//console.log("Changed the color");
+		 }
+       	
+
+		// Create edit button for each task
+		const editButton = document.createElement("button");
+		editButton.innerText = "Edit";
+		editButton.addEventListener("click", () => {
+			editTask(toDo);
+		});
+		li.appendChild(editButton);
+
+
+		const deleteButton = document.createElement("button");
+		deleteButton.innerText = "Delete";
+		deleteButton.addEventListener("click", () => {
+			deleteToDo(toDo);
+		});
+		li.appendChild(deleteButton);
+
+		// li.innerHTML = toDo.name;
+        todoList.append(li);
+        })
+	
+ }
 
 
 //refresh the todo list
@@ -137,7 +219,6 @@ function refresh(){
  
  		let li = document.createElement('li');
 		if (toDo.dueDate < formatToday() && toDo.status != 'completed' ) {
-			alert("Pending overdue task.")
 			li.style = "color:red";
 		}
 
@@ -253,7 +334,6 @@ function checkOverdueTasks() {
     });
 }
 
-//mark down
 
 
 //save to local storage (You can delete anytime if there is no time to implement)
@@ -272,7 +352,7 @@ function load() {
 	  const jsonData = localStorage.getItem('todoListData');
 	  if (jsonData) {
 		list = JSON.parse(jsonData);
-		refresh();
+		initialRefresh();
 		console.log('Data loaded successfully.');
 	  }
 	} catch (error) {
@@ -287,12 +367,10 @@ function filterCategory() {
 	const todoList = document.getElementById("taskList");
 	todoList.innerHTML = ""; // clean the list first, 
 	
-	filteredList.forEach(toDo=>{ //현재는 정말 기본적인 동작 밖에 안함- 추가해야할 것: 체크, 수정(시간없으면 뺄지도),
-						// 오늘까지인 일정 빨간색 표시(대충 완료)
- 
+	filteredList.forEach(toDo=>{
  		let li = document.createElement('li');
 		if (toDo.dueDate < formatToday() && toDo.status != 'completed' ) {
-			alert("Pending overdue task.")
+			//alert("Pending overdue task.")
 			li.style = "color:red";
 		}
 
@@ -339,13 +417,6 @@ function filterCategory() {
 			li.classList.remove("completed");
 		}
 		
-
-		if(isDue(toDo)){// if todo is due today, change the color to red. 
-			li.style = "color:red";
-			//console.log("Changed the color");
-		 }
-       	
-
 		// Create edit button for each task
 		const editButton = document.createElement("button");
 		editButton.innerText = "Edit";
@@ -361,8 +432,6 @@ function filterCategory() {
 			deleteToDo(toDo);
 		});
 		li.appendChild(deleteButton);
-
-		// li.innerHTML = toDo.name;
         todoList.append(li);
         })
 }
@@ -390,7 +459,7 @@ function filterStatus() {
 
 		let li = document.createElement('li');
 		if (toDo.dueDate < formatToday() && toDo.status != 'completed' ) {
-			alert("Pending overdue task.")
+			//alert("Pending overdue task.")
 			li.style = "color:red";
 		}
 
@@ -436,13 +505,6 @@ function filterStatus() {
 			li.classList.remove("completed");
 		}
 
-
-		if(isDue(toDo)){// if todo is due today, change the color to red. 
-			li.style = "color:red";
-		//console.log("Changed the color");
-		}
-
-
 		// Create edit button for each task
 		const editButton = document.createElement("button");
 		editButton.innerText = "Edit";
@@ -476,12 +538,11 @@ function filterPriority() {
 	const todoList = document.getElementById("taskList");
 	todoList.innerHTML = ""; 
 	
-	filteredList.forEach(toDo=>{ //현재는 정말 기본적인 동작 밖에 안함- 추가해야할 것: 체크, 수정(시간없으면 뺄지도),
-		// 오늘까지인 일정 빨간색 표시(대충 완료)
+	filteredList.forEach(toDo=>{ 
 
 		let li = document.createElement('li');
 		if (toDo.dueDate < formatToday() && toDo.status != 'completed' ) {
-			alert("Pending overdue task.")
+			//alert("${toDo.dueDate}: Pending overdue task.")
 			li.style = "color:red";
 		}
 
@@ -527,13 +588,6 @@ function filterPriority() {
 		} else {
 			li.classList.remove("completed");
 		}
-
-
-		if(isDue(toDo)){// if todo is due today, change the color to red. 
-			li.style = "color:red";
-		//console.log("Changed the color");
-		}
-
 
 		// Create edit button for each task
 		const editButton = document.createElement("button");
